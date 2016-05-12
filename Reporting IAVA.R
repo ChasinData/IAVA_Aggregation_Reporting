@@ -472,8 +472,8 @@ Days.cht <- ggplot(Avg.by.Sev, aes(x = Severity, y = Avg.Days, fill = Severity  
 ggsave(file.path(proj_path,"Vulnerability Eradication.png"),width=12)
 
 
-
-
+save.image("IAVA_WORKSPACE.RData")
+#load("IAVA_WORKSPACE.RData")
 
 
 ###########################
