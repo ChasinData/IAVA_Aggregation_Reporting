@@ -174,7 +174,7 @@ IAVM.cht <- ggplot(IAVM.Year, aes(x = Severity, y = IAVM.Count, fill = HRP.name 
   ylab('Amount of IAVMs') +
   ggtitle(paste('All Open IAVMs in Region as of ', sum.max.date, sep="")) +
   theme(legend.position = "bottom", axis.text.x=element_text(angle=20, vjust = 1,hjust=1)) #legend could be bottomt 
-ggsave(file.path(proj_path,"Open IAVM.png"),width=12)
+ggsave(file.path(proj_path,"Open IAVM.png"),width=10)
 
 
 #################ADD REGION DATA to summary
@@ -276,7 +276,7 @@ sum.cht <- ggplot(Sum.Data, aes(x = Score.Name, y = Total )) +
   ggtitle(paste('Total Vulnerabilities, by HRP as of ', sum.max.date, sep="")) +
   theme(legend.position = "none", axis.text.x=element_text(angle=20, vjust = 1,hjust=1)) #legend could be bottom
 sum.cht
-ggsave(file.path(proj_path,"Total Assets with Vulnerabilities, by HRP.png"),width=12)
+ggsave(file.path(proj_path,"Total Assets with Vulnerabilities, by HRP.png"),width=10)
 dev.off()
 
 Sum.Data$Score <- as.numeric(format(round(Sum.Data$Total/Sum.Data$Assets,2)))
@@ -293,7 +293,7 @@ score.cht <- ggplot(Sum.Data, aes(x = HRP.name, y = Score )) +
   ggtitle(paste('Score by HRP as of ', sum.max.date, sep="")) +
   theme(legend.position = "none", axis.text.x=element_text(angle=20, vjust = 1,hjust=1)) #legend could be bottom
 score.cht
-ggsave(file.path(proj_path,"Score, by HRP.png"),width=12)
+ggsave(file.path(proj_path,"Score, by HRP.png"),width=10)
 dev.off()
 
 Sum.Data.bySeverity$Severity <- factor(Sum.Data.bySeverity$Severity, levels = c("Critical","High","Medium"))
@@ -316,7 +316,7 @@ SevbyHRP.cht <- ggplot(Sum.Data.bySeverity, aes(x = HRP.name, y = Total, fill = 
   )
   #theme(legend.position = "bottom", axis.text.x=element_text(angle=20, vjust = 1,hjust=1)) #legend could be bottom
 SevbyHRP.cht
-ggsave(file.path(proj_path,"Vulnerabilities by Severity for each HRP.png"),width=12)
+ggsave(file.path(proj_path,"Vulnerabilities by Severity for each HRP.png"),width=10)
 dev.off()
 
 tmp2=Sum.Data[ ,c(1,10)];Sum.Data.bySeverity=join(Sum.Data.bySeverity, tmp2, by = "HRP.name")
@@ -333,7 +333,7 @@ wrap.cht <- ggplot(Sum.Data.bySeverity, aes(x = Severity, y = Total )) +
   ggtitle('Total Vulnerabilities by HRP') +
   theme(legend.position = "none", axis.text.x=element_text(angle=20, vjust = 1,hjust=1)) #legend could be bottom
 wrap.cht
-ggsave(file.path(proj_path,"Total by Severity and HRP.png"),width=12)
+ggsave(file.path(proj_path,"Total by Severity and HRP.png"),width=10)
 dev.off()
 
 
@@ -373,7 +373,7 @@ history <- ggplot(historical2, aes(x = Date, y = Total, fill=HRP.name )) +
   ggtitle(paste(age, " Day ",'History of Vulnerabilities (Critical and High) beyond 21 Days, as of ', sev.max.date, sep="")) +
   theme(legend.position = "none", axis.text.x=element_text(angle=20, vjust = 1,hjust=1)) #legend could be bottomt 
 history
-ggsave(file.path(proj_path,"Total Critical and High Severity and HRP.png"),width=12)
+ggsave(file.path(proj_path,"Total Critical and High Severity and HRP.png"),width=10)
 dev.off()
 
 historical3<-filter(historical,historical$HRP.name =="Region (ALL HRPs)")
@@ -389,7 +389,7 @@ history <- ggplot(historical3, aes(x = Date, y = Total, colour=HRP.name )) +
   ggtitle(paste(age, " Day ",'History of Vulnerabilities (Critical and High) beyond 21 Days for RHC-A Region, as of ', sev.max.date, sep="")) +
   theme(legend.position = "none", axis.text.x=element_text(angle=20, vjust = 1,hjust=1)) #legend could be bottomt 
 history
-ggsave(file.path(proj_path,"Total Critical and High Severity in RHC-A.png"),width=12)
+ggsave(file.path(proj_path,"Total Critical and High Severity in RHC-A.png"),width=10)
 dev.off()
 
 
@@ -469,7 +469,7 @@ Days.cht <- ggplot(Avg.by.Sev, aes(x = Severity, y = Avg.Days, fill = Severity  
   ylab('Average Days to Removal of Vulnerability') +
   ggtitle(paste('Average Time to Remove Vulnerabilies in 2016', sep="")) +
   theme(legend.position = "bottom", axis.text.x=element_text(angle=20, vjust = 1,hjust=1)) #legend could be bottomt 
-ggsave(file.path(proj_path,"Vulnerability Eradication.png"),width=12)
+ggsave(file.path(proj_path,"Vulnerability Eradication.png"),width=10)
 
 
 save.image("IAVA_WORKSPACE.RData")
