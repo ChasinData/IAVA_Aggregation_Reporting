@@ -107,8 +107,8 @@ nam=paste("HRPs with NO Vulnerabilities greater 21 days as of ", date,".txt",sep
 dput(no.Vulnerabilities.lst, file = file.path(archive_data,"Current HRP with No Vulnerabilities post 21 days.txt"))
 
 
-save(summary, file = file.path(code.plc,"summary.rds"))
-save(severity, file = file.path(code.plc,"severity.rds"))
+save(summary, file = file.path(report,"summary.rds"))
+save(severity, file = file.path(report,"severity.rds"))
 
 summary.bu=summary
 severity.bu=severity
@@ -245,7 +245,7 @@ Sev.Data=select(severity, -As.of.Date) %>%
   arrange(-Total)
 Sev.Data$Date=sev.max.date
 
-load(file = file.path(code.plc,"Historical Data BACKUP.RDS"))
+load(file = file.path(report,"Historical Data BACKUP.RDS"))
 #load(file = file.path(archive_data,"Historical Data MOST RECENT.RDS"))#Historical Data MOST RECENT.RDS
 #colnames(bck)[3]="HRP.name"
 ###Remove last merge
@@ -260,8 +260,8 @@ bck=rbind(Sev.Data[ ,1:3],bck)
 bck.mr=bck
 
 
-save(bck.mr,file=file.path(code.plc,"Historical Data MOST RECENT.RDS"))
-save(bck,file=file.path(code.plc,"Historical Data BACKUP.RDS"))
+save(bck.mr,file=file.path(report,"Historical Data MOST RECENT.RDS"))
+save(bck,file=file.path(report,"Historical Data BACKUP.RDS"))
 
 #Graph Visuals
 Sum.Data$Score.Name<-reorder(Sum.Data$Score.Name, Sum.Data$Total)
@@ -396,8 +396,8 @@ dev.off()
 
 
 code.plc='H:/Code Source/IAVA_Aggregation_Reporting'
-save(bck,file=file.path(code.plc,"Historical Data BACKUP.RDS"))
-save(bck,file=file.path(code.plc,"Historical Data MOST RECENT.RDS"))
+save(bck,file=file.path(report,"Historical Data BACKUP.RDS"))
+save(bck,file=file.path(report,"Historical Data MOST RECENT.RDS"))
 
 #unique(historical$Date)
 
@@ -472,5 +472,5 @@ Days.cht <- ggplot(Avg.by.Sev, aes(x = Severity, y = Avg.Days, fill = Severity  
 ggsave(file.path(proj_path,"Vulnerability Eradication.png"),width=10)
 
 
-save.image(file.path(code.plc,"IAVA_WORKSPACE.RData"))
+save.image(file.path(report,"IAVA_WORKSPACE.RData"))
 

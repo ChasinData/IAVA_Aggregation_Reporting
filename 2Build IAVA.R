@@ -29,7 +29,7 @@ Outlier_Path  = file.path(proj_path, "Outliers")
 Asset_path="S:/CISO/ACAS/ACAS IAVA Reports/Current Asset Numbers/Total Assets by HRP.xlsx"
 
 
-load(file.path(code.plc,"IAVA_WORKSPACE.RData"))
+load(file.path(report,"IAVA_WORKSPACE.RData"))
 
 
 ###########################

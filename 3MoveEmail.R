@@ -21,7 +21,7 @@ report="S:/CISO/ACAS/ACAS IAVA Reports"
 code.plc='H:/Code Source/IAVA_Aggregation_Reporting'
 
 
-load(file.path(code.plc,"IAVA_WORKSPACE.RData"))
+load(file.path(report,"IAVA_WORKSPACE.RData"))
 
 
 ############################################# REMOVE DATA
