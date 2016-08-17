@@ -64,7 +64,7 @@ for (i in  severity.files){
   severity=as.data.frame(rbind(severity,df))
 }
 severity$HRP.name=gsub("Regional Health Command - Atlantic", "RHC-A (P) HQ", severity$HRP.name, ignore.case = FALSE, perl = FALSE,
-              fixed = FALSE, useBytes = FALSE) 
+                       fixed = FALSE, useBytes = FALSE) 
 #severity$HRP.name=gsub("RHC -A", "RHC-A (P) HQ", severity$HRP.name, ignore.case = FALSE, perl = FALSE,
 #                       fixed = FALSE, useBytes = FALSE) 
 severity$HRP.name=gsub("Ft. Myers Severity Summary for Alerts.csv", "Ft. Myers", severity$HRP.name, ignore.case = FALSE, perl = FALSE,
@@ -91,7 +91,7 @@ for (i in  summary.files){
   #no.Vulnerabilities =rbind(nvl,no.Vulnerabilities )
 }
 summary$HRP.name=gsub("Regional Health Command - Atlantic", "RHC-A (P) HQ", summary$HRP.name, ignore.case = FALSE, perl = FALSE,
-                       fixed = FALSE, useBytes = FALSE) 
+                      fixed = FALSE, useBytes = FALSE) 
 #summary$HRP.name=gsub("RHC -A (P) HQ", "RHC-A (P) HQ", summary$HRP.name, ignore.case = FALSE, perl = FALSE,
 #                      fixed = FALSE, useBytes = FALSE) 
 summary$HRP.name=gsub("Ft. Myers Severity Summary for Alerts.csv", "Ft. Myers", summary$HRP.name, ignore.case = FALSE, perl = FALSE,
@@ -107,8 +107,8 @@ nam=paste("HRPs with NO Vulnerabilities greater 21 days as of ", date,".txt",sep
 dput(no.Vulnerabilities.lst, file = file.path(archive_data,"Current HRP with No Vulnerabilities post 21 days.txt"))
 
 
-save(summary, file = file.path(code.plc,"summary.rds"))
-save(severity, file = file.path(code.plc,"severity.rds"))
+save(summary, file = file.path(report,"summary.rds"))
+save(severity, file = file.path(report,"severity.rds"))
 
 summary.bu=summary
 severity.bu=severity
@@ -174,7 +174,7 @@ IAVM.cht <- ggplot(IAVM.Year, aes(x = Severity, y = IAVM.Count, fill = HRP.name 
   ylab('Amount of IAVMs') +
   ggtitle(paste('All Open IAVMs in Region as of ', sum.max.date, sep="")) +
   theme(legend.position = "bottom", axis.text.x=element_text(angle=20, vjust = 1,hjust=1)) #legend could be bottomt 
-ggsave(file.path(proj_path,"Open IAVM.png"),width=10)
+ggsave(file.path(proj_path,"Open IAVM.png"),width=10, height=7)
 
 
 #################ADD REGION DATA to summary
@@ -233,7 +233,7 @@ Sum.Data.bySeverity=gather(Sum.Data.bySeverity,key=Severity,value=Total, -HRP.na
 
 ####BRing in score data
 temp=Sum.Data[ ,c(1,6:9)]
-Sum.Data.bySeverity <- join(Sum.Data.bySeverity, temp, by = "HRP.name")
+Sum.Data.bySeverity <- merge(Sum.Data.bySeverity, temp, by.all = "HRP.name")
 
 severity = filter(severity, severity$Severity == "High" |
                     severity$Severity == "Critical")
@@ -245,7 +245,7 @@ Sev.Data=select(severity, -As.of.Date) %>%
   arrange(-Total)
 Sev.Data$Date=sev.max.date
 
-load(file = file.path(code.plc,"Historical Data BACKUP.RDS"))
+load(file = file.path(report,"Historical Data BACKUP.RDS"))
 #load(file = file.path(archive_data,"Historical Data MOST RECENT.RDS"))#Historical Data MOST RECENT.RDS
 #colnames(bck)[3]="HRP.name"
 ###Remove last merge
@@ -260,8 +260,8 @@ bck=rbind(Sev.Data[ ,1:3],bck)
 bck.mr=bck
 
 
-save(bck.mr,file=file.path(code.plc,"Historical Data MOST RECENT.RDS"))
-save(bck,file=file.path(code.plc,"Historical Data BACKUP.RDS"))
+save(bck.mr,file=file.path(report,"Historical Data MOST RECENT.RDS"))
+save(bck,file=file.path(report,"Historical Data BACKUP.RDS"))
 
 #Graph Visuals
 Sum.Data$Score.Name<-reorder(Sum.Data$Score.Name, Sum.Data$Total)
@@ -276,7 +276,7 @@ sum.cht <- ggplot(Sum.Data, aes(x = Score.Name, y = Total )) +
   ggtitle(paste('Total Vulnerabilities, by HRP as of ', sum.max.date, sep="")) +
   theme(legend.position = "none", axis.text.x=element_text(angle=20, vjust = 1,hjust=1)) #legend could be bottom
 sum.cht
-ggsave(file.path(proj_path,"Total Assets with Vulnerabilities, by HRP.png"),width=10)
+ggsave(file.path(proj_path,"Total Assets with Vulnerabilities, by HRP.png"),width=10, height=7)
 dev.off()
 
 Sum.Data$Score <- as.numeric(format(round(Sum.Data$Total/Sum.Data$Assets,2)))
@@ -293,7 +293,7 @@ score.cht <- ggplot(Sum.Data, aes(x = HRP.name, y = Score )) +
   ggtitle(paste('Score by HRP as of ', sum.max.date, sep="")) +
   theme(legend.position = "none", axis.text.x=element_text(angle=20, vjust = 1,hjust=1)) #legend could be bottom
 score.cht
-ggsave(file.path(proj_path,"Score, by HRP.png"),width=10)
+ggsave(file.path(proj_path,"Score, by HRP.png"),width=10, height=7)
 dev.off()
 
 Sum.Data.bySeverity$Severity <- factor(Sum.Data.bySeverity$Severity, levels = c("Critical","High","Medium"))
@@ -314,9 +314,9 @@ SevbyHRP.cht <- ggplot(Sum.Data.bySeverity, aes(x = HRP.name, y = Total, fill = 
     axis.text.x=element_text(angle=20, vjust = 1,hjust=1),
     axis.text.y=element_text(angle=20, vjust = 1,hjust=1)
   )
-  #theme(legend.position = "bottom", axis.text.x=element_text(angle=20, vjust = 1,hjust=1)) #legend could be bottom
+#theme(legend.position = "bottom", axis.text.x=element_text(angle=20, vjust = 1,hjust=1)) #legend could be bottom
 SevbyHRP.cht
-ggsave(file.path(proj_path,"Vulnerabilities by Severity for each HRP.png"),width=10)
+ggsave(file.path(proj_path,"Vulnerabilities by Severity for each HRP.png"),width=10, height=7)
 dev.off()
 
 tmp2=Sum.Data[ ,c(1,10)];Sum.Data.bySeverity=join(Sum.Data.bySeverity, tmp2, by = "HRP.name")
@@ -333,7 +333,7 @@ wrap.cht <- ggplot(Sum.Data.bySeverity, aes(x = Severity, y = Total )) +
   ggtitle('Total Vulnerabilities by HRP') +
   theme(legend.position = "none", axis.text.x=element_text(angle=20, vjust = 1,hjust=1)) #legend could be bottom
 wrap.cht
-ggsave(file.path(proj_path,"Total by Severity and HRP.png"),width=10)
+ggsave(file.path(proj_path,"Total by Severity and HRP.png"),width=10, height=7)
 dev.off()
 
 
@@ -366,14 +366,14 @@ history <- ggplot(historical2, aes(x = Date, y = Total, fill=HRP.name )) +
   geom_smooth() +
   facet_wrap(~HRP.name, scales = "free") +
   #geom_text(aes(label = HRP.name, x=max(Date),y = Total+250), size = 3) +
- # geom_text(aes(label = Total, x=Date,y = Total*1.1), size = 3) +
+  # geom_text(aes(label = Total, x=Date,y = Total*1.1), size = 3) +
   scale_colour_hue(c=45, l = 45) + #higher l is darker
   xlab('') +
   ylab('Total Critical and High Vulnerabilities ') +
   ggtitle(paste(age, " Day ",'History of Vulnerabilities (Critical and High) beyond 21 Days, as of ', sev.max.date, sep="")) +
   theme(legend.position = "none", axis.text.x=element_text(angle=20, vjust = 1,hjust=1)) #legend could be bottomt 
 history
-ggsave(file.path(proj_path,"Total Critical and High Severity and HRP.png"),width=10)
+ggsave(file.path(proj_path,"Total Critical and High Severity and HRP.png"),width=10, height=7)
 dev.off()
 
 historical3<-filter(historical,historical$HRP.name =="Region (ALL HRPs)")
@@ -389,15 +389,15 @@ history <- ggplot(historical3, aes(x = Date, y = Total, colour=HRP.name )) +
   ggtitle(paste(age, " Day ",'History of Vulnerabilities (Critical and High) beyond 21 Days for RHC-A Region, as of ', sev.max.date, sep="")) +
   theme(legend.position = "none", axis.text.x=element_text(angle=20, vjust = 1,hjust=1)) #legend could be bottomt 
 history
-ggsave(file.path(proj_path,"Total Critical and High Severity in RHC-A.png"),width=10)
+ggsave(file.path(proj_path,"Total Critical and High Severity in RHC-A.png"),width=10, height=7)
 dev.off()
 
 
 
 
 code.plc='H:/Code Source/IAVA_Aggregation_Reporting'
-save(bck,file=file.path(code.plc,"Historical Data BACKUP.RDS"))
-save(bck,file=file.path(code.plc,"Historical Data MOST RECENT.RDS"))
+save(bck,file=file.path(report,"Historical Data BACKUP.RDS"))
+save(bck,file=file.path(report,"Historical Data MOST RECENT.RDS"))
 
 #unique(historical$Date)
 
@@ -469,11 +469,10 @@ Days.cht <- ggplot(Avg.by.Sev, aes(x = Severity, y = Avg.Days, fill = Severity  
   ylab('Average Days to Removal of Vulnerability') +
   ggtitle(paste('Average Time to Remove Vulnerabilies in 2016', sep="")) +
   theme(legend.position = "bottom", axis.text.x=element_text(angle=20, vjust = 1,hjust=1)) #legend could be bottomt 
-ggsave(file.path(proj_path,"Vulnerability Eradication.png"),width=10)
+ggsave(file.path(proj_path,"Vulnerability Eradication.png"),width=10, height=7)
 
 
-save.image(file.path(code.plc,"IAVA_WORKSPACE.RData"))
-load(file.path(code.plc,"IAVA_WORKSPACE.RData"))
+save.image(file.path(report,"IAVA_WORKSPACE.RData"))
 
 
 ###########################
@@ -514,189 +513,185 @@ body2 = format(round(body3/body4,2))
 body1 = as.character(sum.max.date)
 body5 = body1
 
-  mydoc = addSlide( mydoc, "Summary and Ratio Data" )
-  #mydoc = addTitle( mydoc, as.character(x$Functional.Area))
-  mydoc = addParagraph( mydoc, value = body1 ) #1
-  mydoc = addParagraph( mydoc, value = body2 )#2
-  mydoc = addParagraph( mydoc, value = as.character(body3) )#3
-  mydoc = addParagraph( mydoc, value = as.character(body1)) #4
-  mydoc = addImage(mydoc, file.path(proj_path, "Score, by HRP.png"))
-  mydoc = addParagraph( mydoc, value = as.character(body4)) #6
-    mydoc = addParagraph( mydoc, value = as.character(Region.IAVM.Count)) #7
-  #mydoc = addSlide( mydoc, "Status" )
- # writeDoc( mydoc, "test.pptx")
+mydoc = addSlide( mydoc, "Summary and Ratio Data" )
+#mydoc = addTitle( mydoc, as.character(x$Functional.Area))
+mydoc = addParagraph( mydoc, value = body1 ) #1
+mydoc = addParagraph( mydoc, value = body2 )#2
+mydoc = addParagraph( mydoc, value = as.character(body3) )#3
+mydoc = addParagraph( mydoc, value = as.character(body1)) #4
+mydoc = addImage(mydoc, file.path(proj_path, "Score, by HRP.png"))
+mydoc = addParagraph( mydoc, value = as.character(body4)) #6
+mydoc = addParagraph( mydoc, value = as.character(Region.IAVM.Count)) #7
+#mydoc = addSlide( mydoc, "Status" )
+# writeDoc( mydoc, "test.pptx")
 #########################################################################
-  
-  
-  
- # mydoc = pptx(template = file.path(archive_data, "IAVA Scorecard Template2.pptx"))
-  
-  ###############################################
-  # check my layout names:
-  slide.layouts(mydoc)
-  slide.layouts(mydoc, 'IAVA by HRP Summary')
-  
-  body4 = Region #Total ASSETS
-  body3 = sum(summary$Total)/2 #Total IAVA
-  body2 = format(round(body3/body4,2))
-  body1 = as.character(sum.max.date)
-  body5 = body1
-  
-  mydoc = addSlide( mydoc, "Chart_Only" )
-#  mydoc = addTitle( mydoc, "G-6: IAVA Compliance Status")
-  mydoc = addParagraph( mydoc, value = body1 ) #1
 
-  mydoc = addImage(mydoc, file.path(proj_path, "Vulnerabilities by Severity for each HRP.png"))
-  #mydoc = addSlide( mydoc, "Status" )
- # writeDoc( mydoc, "test.pptx")
-  
-  mydoc = addSlide( mydoc, "Chart_Only" )
-  #  mydoc = addTitle( mydoc, "G-6: IAVA Compliance Status")
-  mydoc = addParagraph( mydoc, value = body1 ) #1
-  
-  mydoc = addImage(mydoc, file.path(proj_path, "Open IAVM.png"))
-  #mydoc = addSlide( mydoc, "Status" )
-  # writeDoc( mydoc, "test.pptx")
-  ###############################################
-  # check my layout names:
-  slide.layouts(mydoc)
-  slide.layouts(mydoc, 'Chart_Only')
-  
-  body4 = Region #Total ASSETS
-  body3 = sum(summary$Total) #Total IAVA
-  body2 = format(round(body3/body4,2))
-  body1 = as.character(sum.max.date)
-  body5 = body1
-  
-  mydoc = addSlide( mydoc, "Chart_Only" )
+
+
+# mydoc = pptx(template = file.path(archive_data, "IAVA Scorecard Template2.pptx"))
+
+###############################################
+# check my layout names:
+slide.layouts(mydoc)
+slide.layouts(mydoc, 'IAVA by HRP Summary')
+
+body4 = Region #Total ASSETS
+body3 = sum(summary$Total)/2 #Total IAVA
+body2 = format(round(body3/body4,2))
+body1 = as.character(sum.max.date)
+body5 = body1
+
+mydoc = addSlide( mydoc, "Chart_Only" )
 #  mydoc = addTitle( mydoc, "G-6: IAVA Compliance Status")
-  mydoc = addParagraph( mydoc, value = body1 ) #1
+mydoc = addParagraph( mydoc, value = body1 ) #1
+
+mydoc = addImage(mydoc, file.path(proj_path, "Vulnerabilities by Severity for each HRP.png"))
+#mydoc = addSlide( mydoc, "Status" )
+# writeDoc( mydoc, "test.pptx")
+
+mydoc = addSlide( mydoc, "Chart_Only" )
+#  mydoc = addTitle( mydoc, "G-6: IAVA Compliance Status")
+mydoc = addParagraph( mydoc, value = body1 ) #1
+
+mydoc = addImage(mydoc, file.path(proj_path, "Open IAVM.png"))
+#mydoc = addSlide( mydoc, "Status" )
+# writeDoc( mydoc, "test.pptx")
+###############################################
+# check my layout names:
+slide.layouts(mydoc)
+slide.layouts(mydoc, 'Chart_Only')
+
+body4 = Region #Total ASSETS
+body3 = sum(summary$Total) #Total IAVA
+body2 = format(round(body3/body4,2))
+body1 = as.character(sum.max.date)
+body5 = body1
+
+mydoc = addSlide( mydoc, "Chart_Only" )
+#  mydoc = addTitle( mydoc, "G-6: IAVA Compliance Status")
+mydoc = addParagraph( mydoc, value = body1 ) #1
 #  mydoc = addParagraph( mydoc, value = body1 )#2
-  mydoc = addImage(mydoc, file.path(proj_path, "Total by Severity and HRP.png"))
-  #mydoc = addSlide( mydoc, "Status" )
-  # writeDoc( mydoc, "test.pptx")
-  
-  
- # mydoc = pptx(template = file.path(archive_data, "IAVA Scorecard Template2.pptx"))
-  ###############################################
-  # check my layout names:
-  slide.layouts(mydoc)
-  slide.layouts(mydoc, 'Chart_Only')
-  
-  body4 = Region #Total ASSETS
-  body3 = sum(summary$Total) #Total IAVA
-  body2 = format(round(body3/body4,2))
-  body1 = as.character(sum.max.date)
-  body5 = body1
-  
-  mydoc = addSlide( mydoc, "Chart_Only" )
-  #  mydoc = addTitle( mydoc, "G-6: IAVA Compliance Status")
-  mydoc = addParagraph( mydoc, value = body1 ) #1
-  #  mydoc = addParagraph( mydoc, value = body1 )#2
-  mydoc = addImage(mydoc, file.path(proj_path, "Vulnerability Eradication.png"))
-  #mydoc = addSlide( mydoc, "Status" )
-  # writeDoc( mydoc, "test.pptx")
-  
-  
-  ###############################################
-  # check my layout names:
-  slide.layouts(mydoc)
-  slide.layouts(mydoc, '21 Day data')
-  
-  body4 = Region #Total ASSETS
-  body3 = sum(summary$Total)/2 #Total IAVA
-  body2 = format(round(body3/body4,2))
-  body5 = body1
-  
-  mydoc = addSlide( mydoc, "Chart_Only" )
+mydoc = addImage(mydoc, file.path(proj_path, "Total by Severity and HRP.png"))
+#mydoc = addSlide( mydoc, "Status" )
+# writeDoc( mydoc, "test.pptx")
+
+
+# mydoc = pptx(template = file.path(archive_data, "IAVA Scorecard Template2.pptx"))
+###############################################
+# check my layout names:
+slide.layouts(mydoc)
+slide.layouts(mydoc, 'Chart_Only')
+
+body4 = Region #Total ASSETS
+body3 = sum(summary$Total) #Total IAVA
+body2 = format(round(body3/body4,2))
+body1 = as.character(sum.max.date)
+body5 = body1
+
+mydoc = addSlide( mydoc, "Chart_Only" )
 #  mydoc = addTitle( mydoc, "G-6: IAVA Compliance Status")
-  mydoc = addParagraph( mydoc, value = body1 ) #1
+mydoc = addParagraph( mydoc, value = body1 ) #1
 #  mydoc = addParagraph( mydoc, value = body1 )#2
-  mydoc = addImage(mydoc, file.path(proj_path, "Total Critical and High Severity and HRP.png"))
-  #mydoc = addSlide( mydoc, "Status" )
-  
-  ###############################################
-  # check my layout names:
-  slide.layouts(mydoc)
-  slide.layouts(mydoc, '21 Day data')
-  
-  body4 = Region #Total ASSETS
-  body3 = sum(summary$Total)/2 #Total IAVA
-  body2 = format(round(body3/body4,2))
-  body5 = body1
-  
-  mydoc = addSlide( mydoc, "Chart_Only" )
-  #  mydoc = addTitle( mydoc, "G-6: IAVA Compliance Status")
-  mydoc = addParagraph( mydoc, value = body1 ) #1
-  #  mydoc = addParagraph( mydoc, value = body1 )#2
-  mydoc = addImage(mydoc, file.path(proj_path, "Total Critical and High Severity in RHC-A.png"))
-  #mydoc = addSlide( mydoc, "Status" )
-  
-  ###############################################
-  # check my layout names:
-  slide.layouts(mydoc)
-  slide.layouts(mydoc, 'Text')
- 
-  body = paste("Total IAVA (", body3,") is calculated by taking the Sum of all IAVA in the Summary reports provided RHC-A (P) Cyber Security.
-Total Assets (",body4,") is calculated by taking the Sum of all 'ComputerName' in the Total Assets by HRP report, as pulled DHA. 
-Score is calculated by dividing the total IAVAs by the total Assets for each HRP.
-Some charts (with Total Vulnerabilities) have a modified HRP name, for which the format is the HRP _ SCORE. (eg.", Sum.Data[1,10], "),
-Average Score (",meancalc, ") is calculated by taking the mean score of all HRPs, excluding the Region score, Reference: Slide 2. 
-21 Day reporting is derived from the Severity reports pulled by RHC-A (P) Cyber Security.
-Open IAVMs (", Region.IAVM.Count, ") are the IAVMs from summary data, grouped by severity and year released.
-Vulnerability Eradication is calculated by averaging the time an IAVM 'issued' in 2016 took to 'leave' the reporting system.",
- sep="")
-  
-  
-  mydoc = addSlide( mydoc, "Text" )
-  mydoc = addTitle( mydoc, "Data Definitions")
-  mydoc = addParagraph( mydoc, value = body ) #1
+mydoc = addImage(mydoc, file.path(proj_path, "Vulnerability Eradication.png"))
+#mydoc = addSlide( mydoc, "Status" )
+# writeDoc( mydoc, "test.pptx")
 
-  filename = paste("IAVA Brief " ,sum.max.date, ".pptx",sep="")
-  filenamea = paste("S:/CISO/ACAS/ACAS IAVA Reports/IAVA Brief draft " ,sum.max.date, ".pptx",sep="")
- 
-  writeDoc( mydoc, filename)
-  writeDoc( mydoc, file.path(report, filename))
-  writeDoc( mydoc, file.path(archive_data, filename))
 
-  fldr<-'Y:/IAVA Reporting'
+###############################################
+# check my layout names:
+slide.layouts(mydoc)
+slide.layouts(mydoc, '21 Day data')
 
-  file.copy(file.path(report, filename), file.path(fldr),overwrite = T,copy.mode = TRUE, copy.date = TRUE)
-  
-  ############################################# REMOVE DATA
-  
-  dir.create(file.path(severity_data, sev.max.date), showWarnings = FALSE, recursive = FALSE, mode = "0777")
-  dir.create(file.path(summary_data, sum.max.date), showWarnings = FALSE, recursive = FALSE, mode = "0777")
-  
-  newsumfldr=file.path(summary_data, sum.max.date)
-  for (i in summary.files){
-    file.copy(file.path(summary_data,i), file.path(newsumfldr, i),overwrite = T,copy.mode = TRUE, copy.date = TRUE)
-    file.remove(file.path(summary_data,i))
-  }
-  newsevfldr=file.path(severity_data, sev.max.date)
-  for (i in severity.files){
-    file.copy(file.path(severity_data,i), file.path(newsevfldr, i),overwrite = T,copy.mode = TRUE, copy.date = TRUE)
-    file.remove(file.path(severity_data,i))
-  }
-  
-  ##########################   Send Mail Option   #########################################
-  
-  library(mailR)
-  
-  # d <- weekdays(as.Date(date))
-  recipients <- c("victor.f.sorano.mil@mail.mil", "janice.a.stewart2.civ@mail.mil", "kenneth.d.stamm.ctr@mail.mil", "charles.m.grimm.civ@mail.mil") 
-  cc_list <- c("stephen.m.trask.ctr@mail.mil", "adrian.l.farquhar.ctr@mail.mil")
-  sub=paste("IAVA Briefing, dated ", sum.max.date, sep="")
-  body=paste("A new IAVA Briefing has been created, dated ", sum.max.date, " The file is located on the SP 2010 Site.  https://rhca.amedd.army.mil/department/BI/Pages/Cyber-Security-Projects.aspx ",sep = "")
-  send.mail(from = "IAVA Update <strask@tiag.net>",
-            to = recipients,
-            cc = cc_list,
-            subject = sub,
-            body = body,
-            smtp = list(host.name = "smtp.gmail.com", port = 25, user.name = "strask@tiag.net", passwd = "st2583990", ssl = TRUE),
-            authenticate = TRUE,
-            send = TRUE,
-            #attach.files = c(filename),
-            # file.names = c(filename), # optional parameter
-            # file.descriptions = c("Current IAVA Status"), # optional parameter
-            debug = TRUE)
+body4 = Region #Total ASSETS
+body3 = sum(summary$Total)/2 #Total IAVA
+body2 = format(round(body3/body4,2))
+body5 = body1
+
+mydoc = addSlide( mydoc, "Chart_Only" )
+#  mydoc = addTitle( mydoc, "G-6: IAVA Compliance Status")
+mydoc = addParagraph( mydoc, value = body1 ) #1
+#  mydoc = addParagraph( mydoc, value = body1 )#2
+mydoc = addImage(mydoc, file.path(proj_path, "Total Critical and High Severity and HRP.png"))
+#mydoc = addSlide( mydoc, "Status" )
+
+###############################################
+# check my layout names:
+slide.layouts(mydoc)
+slide.layouts(mydoc, '21 Day data')
+
+body4 = Region #Total ASSETS
+body3 = sum(summary$Total)/2 #Total IAVA
+body2 = format(round(body3/body4,2))
+body5 = body1
+
+mydoc = addSlide( mydoc, "Chart_Only" )
+#  mydoc = addTitle( mydoc, "G-6: IAVA Compliance Status")
+mydoc = addParagraph( mydoc, value = body1 ) #1
+#  mydoc = addParagraph( mydoc, value = body1 )#2
+mydoc = addImage(mydoc, file.path(proj_path, "Total Critical and High Severity in RHC-A.png"))
+#mydoc = addSlide( mydoc, "Status" )
+
+###############################################
+# check my layout names:
+slide.layouts(mydoc)
+slide.layouts(mydoc, 'Text')
+
+body = paste("Total IAVA (", body3,") is calculated by taking the Sum of all IAVA in the Summary reports provided RHC-A (P) Cyber Security.
+             Total Assets (",body4,") is calculated by taking the Sum of all 'ComputerName' in the Total Assets by HRP report, as pulled DHA. 
+             Score is calculated by dividing the total IAVAs by the total Assets for each HRP.
+             Some charts (with Total Vulnerabilities) have a modified HRP name, for which the format is the HRP _ SCORE. (eg.", Sum.Data[1,10], "),
+             Average Score (",meancalc, ") is calculated by taking the mean score of all HRPs, excluding the Region score, Reference: Slide 2. 
+             21 Day reporting is derived from the Severity reports pulled by RHC-A (P) Cyber Security.
+             Open IAVMs (", Region.IAVM.Count, ") are the IAVMs from summary data, grouped by severity and year released.
+             Vulnerability Eradication is calculated by averaging the time an IAVM 'issued' in 2016 took to 'leave' the reporting system.",
+             sep="")
+
+
+mydoc = addSlide( mydoc, "Text" )
+mydoc = addTitle( mydoc, "Data Definitions")
+mydoc = addParagraph( mydoc, value = body ) #1
+
+filename = paste("IAVA Brief " ,sum.max.date, ".pptx",sep="")
+filenamea = paste("S:/CISO/ACAS/ACAS IAVA Reports/IAVA Brief draft " ,sum.max.date, ".pptx",sep="")
+
+writeDoc( mydoc, filename)
+writeDoc( mydoc, file.path(report, filename))
+writeDoc( mydoc, file.path(archive_data, filename))
+
+Metric<-c('Total.IAVA', 'Total.Assets', 'Avg.IAVAperAsset', 'Open.Critical.IAVA', 'Open.Medium.IAVA',
+          'Open.Low.IAVA', 'IAVA.Beyond.21', 'Vulnerability.Eradication.Days')
+Critical<-select(summary, everything()) %>%
+  filter(Severity=="Critical") %>% 
+  summarise(Value=sum(Total))
+Medium<-select(summary, everything()) %>%
+  filter( Severity=="Medium") %>% 
+  summarise(Value=sum(Total))
+Low<-select(summary, everything()) %>%
+  filter( Severity=="Low") %>% 
+  summarise(Value=sum(Total))
+
+Value<-c(sum(summary$Total)/2 , Region, body2, Critical, Medium, Low, 
+         sum(Sev.Data$Total), mean(as.numeric(Week.Calc$days)))
+
+#tmp.Calc<-as.data.frame(cbind(Value,Metric))
+#tmp.Calc$Parent<-"Automatic"
+#tmp.Calc$Section<-"ISSM"
+#loc<-paste("S:/PMB/ISSM/2016/", as.numeric(toupper(format(Sys.Date(), format="%m"))), " ", toupper(format(Sys.Date(), format="%b")),"/Master M__AUTO.xlsx", sep="")
+#write.xlsx(tmp.Calc, loc, row.name=F )
+fldr<-'Y:/IAVA Reporting'
+
+file.copy(file.path(report, filename), file.path(fldr),overwrite = T,copy.mode = TRUE, copy.date = TRUE)
+dir.create(file.path(severity_data, sev.max.date), showWarnings = FALSE, recursive = FALSE, mode = "0777")
+dir.create(file.path(summary_data, sum.max.date), showWarnings = FALSE, recursive = FALSE, mode = "0777")
+
+newsumfldr=file.path(summary_data, sum.max.date)
+for (i in summary.files){
+  file.copy(file.path(summary_data,i), file.path(newsumfldr, i),overwrite = T,copy.mode = TRUE, copy.date = TRUE)
+  file.remove(file.path(summary_data,i))
+}
+newsevfldr=file.path(severity_data, sev.max.date)
+for (i in severity.files){
+  file.copy(file.path(severity_data,i), file.path(newsevfldr, i),overwrite = T,copy.mode = TRUE, copy.date = TRUE)
+  file.remove(file.path(severity_data,i))
+}
+
